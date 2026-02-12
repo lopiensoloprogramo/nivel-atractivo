@@ -48,36 +48,35 @@ const handlePhoto = (file: File) => {
   reader.onload = () => {
     setImage(reader.result as string);
 
-    // Elegir mensaje y puntaje final al inicio
+    // Elegimos mensaje y puntaje final
     const r = mensajes[Math.floor(Math.random() * mensajes.length)];
     const targetScore = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
 
-    let p = 0;
+    let progressValue = 0;
 
-    const interval = setInterval(() => {
-      p += Math.random() * 6; // incrementa barra
-      if (p > 100) p = 100;
+    const animate = () => {
+      progressValue += 2; // velocidad de la barra
+      if (progressValue > 100) progressValue = 100;
 
-      setProgress(p);
+      setProgress(progressValue);
+      setPercent(Math.floor((progressValue / 100) * targetScore));
 
-      // Número proporcional al progreso de la barra
-      const currentPercent = Math.floor((p / 100) * targetScore);
-      setPercent(currentPercent);
-
-      if (p === 100) {
-        clearInterval(interval);
+      if (progressValue < 100) {
+        requestAnimationFrame(animate); // vuelve a llamar al siguiente frame
+      } else {
         setShowPromo(false);
-
-        // Mostrar resultado final
         setResult({ txt: r.txt, score: targetScore });
-        setPercent(targetScore); // asegurar valor exacto
+        setPercent(targetScore); // asegura valor exacto
         setLoading(false);
       }
-    }, 100);
+    };
+
+    requestAnimationFrame(animate);
   };
 
   reader.readAsDataURL(file);
 };
+
 
 
   const fakeLoading = () => {
