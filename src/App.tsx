@@ -96,7 +96,7 @@ function App() {
         <div className="promo-box">
          
         
-          <div id="container-e3cd318543c99f5655fb82c6325acab5" style={{ fontSize: 12, opacity: 0.8 }}>Toca para ver</div>
+          <div id="container-e3cd318543c99f5655fb82c6325acab5" style={{ fontSize: 12, opacity: 0.8 }}></div>
         </div>
       )}
 
