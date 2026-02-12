@@ -37,33 +37,20 @@ function App() {
   }, []);
 
   
-const handlePhoto = (file: File) => {
-  setLoading(true);
-  setProgress(0);
-  setPercent(0);
-  setResult(null);
-  setShowPromo(true);
+  const handlePhoto = (file: File) => {
+    setLoading(true);
+    setProgress(0);
+    setPercent(0);
+    setResult(null);
+    setShowPromo(true); // vuelve a mostrarse al empezar
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    setImage(reader.result as string);
-
-    // Simula carga progresiva visible en móvil y PC
-    let i = 0;
-    const interval = setInterval(() => {
-      i += 1; // incrementa 5% cada 50ms, ajusta a tu gusto
-      setProgress(i);
-      setPercent(i);
-
-      if (i >= 100) {
-        clearInterval(interval);
-        setLoading(false); // oculta la barra al 100%
-      }
-    }, 50);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result as string);
+      fakeLoading();
+    };
+    reader.readAsDataURL(file);
   };
-  reader.readAsDataURL(file);
-};
-
 
   const fakeLoading = () => {
     let p = 0;
