@@ -54,15 +54,15 @@ const handlePhoto = (file: File) => {
 
     let progressValue = 0;
 
-    const animate = () => {
-      progressValue += 2; // velocidad de la barra
+    const step = () => {
+      progressValue += 2; // velocidad constante
       if (progressValue > 100) progressValue = 100;
 
       setProgress(progressValue);
       setPercent(Math.floor((progressValue / 100) * targetScore));
 
       if (progressValue < 100) {
-        requestAnimationFrame(animate); // vuelve a llamar al siguiente frame
+        setTimeout(step, 50); // espera 50ms antes del siguiente incremento
       } else {
         setShowPromo(false);
         setResult({ txt: r.txt, score: targetScore });
@@ -71,7 +71,7 @@ const handlePhoto = (file: File) => {
       }
     };
 
-    requestAnimationFrame(animate);
+    step(); // inicia animación
   };
 
   reader.readAsDataURL(file);
