@@ -51,7 +51,7 @@ const handlePhoto = (file: File) => {
     // Simula carga progresiva visible en móvil y PC
     let i = 0;
     const interval = setInterval(() => {
-      i += 5; // incrementa 5% cada 50ms, ajusta a tu gusto
+      i += 1; // incrementa 5% cada 50ms, ajusta a tu gusto
       setProgress(i);
       setPercent(i);
 
