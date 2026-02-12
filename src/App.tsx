@@ -35,54 +35,41 @@ function App() {
     };
   }, []);
 
-const handlePhoto = (file: File) => {
-  setLoading(true);
-  setProgress(0);
-  setResult(null);
-  setShowPromo(true);
+  const handlePhoto = (file: File) => {
+    setLoading(true);
+    setProgress(0);
+    setResult(null);
+    setShowPromo(true);
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    setImage(reader.result as string);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result as string);
 
-    const r = mensajes[Math.floor(Math.random() * mensajes.length)];
-    const targetScore = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
-    setResult({ txt: r.txt, score: targetScore });
+      // Elegimos mensaje y puntaje final
+      const r = mensajes[Math.floor(Math.random() * mensajes.length)];
+      const targetScore = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
 
-    let progressValue = 0;
+      let progressValue = 0;
 
-    // Función para animar cada fase
-    const animatePhase = (from: number, to: number, duration: number, callback?: () => void) => {
-      const stepTime = 50; // cada 50ms
-      const steps = Math.ceil(duration / stepTime);
-      const increment = (to - from) / steps;
-      let current = from;
-      const interval = setInterval(() => {
-        current += increment;
-        if (current >= to) {
-          current = to;
-          clearInterval(interval);
-          if (callback) callback();
+      const step = () => {
+        progressValue += Math.random() * 6; // velocidad de la barra
+        if (progressValue > 100) progressValue = 100;
+        setProgress(progressValue);
+
+        if (progressValue < 100) {
+          setTimeout(step, 50); // intervalo constante, más confiable en móviles
+        } else {
+          setShowPromo(false);
+          setResult({ txt: r.txt, score: targetScore });
+          setLoading(false);
         }
-        setProgress(current);
-      }, stepTime);
+      };
+
+      step();
     };
 
-    // Ejecutar las fases secuenciales
-    animatePhase(0, 30, 600, () => {
-      animatePhase(30, 60, 1000, () => {
-        animatePhase(60, 99, 1200, () => {
-          setProgress(100);
-          setShowPromo(false);
-          setLoading(false);
-        });
-      });
-    });
+    reader.readAsDataURL(file);
   };
-
-  reader.readAsDataURL(file);
-};
-
 
   const abrirPublicidad = () => {
     const script = document.createElement("script");
@@ -128,7 +115,11 @@ const handlePhoto = (file: File) => {
             <div className="fill" style={{ width: `${progress}%` }} />
           </div>
           {/* Mostrar porcentaje proporcional a barra */}
-            <p>{result ? Math.floor((progress / 100) * result.score) : 0}%</p>
+          <p>
+            {result
+              ? Math.floor((progress / 100) * result.score)
+              : Math.floor(progress)}%
+          </p>
         </div>
       )}
 
