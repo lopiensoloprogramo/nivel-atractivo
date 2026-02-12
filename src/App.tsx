@@ -77,7 +77,7 @@ function App() {
   return (
     <div className="app">
       <h1>¿Qué tan atractivo eres?</h1>
-      <p className="sub">Descúbrelo en segundos. Nadie guarda tu foto.</p>
+      <p className="sub">Descúbrelo en segundos. Privacidad Garantizada.</p>
 
       {showPromo && (
         <div className="promo-box">
