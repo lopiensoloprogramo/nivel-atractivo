@@ -12,7 +12,6 @@ const mensajes = [
 function App() {
   const [misteryCount, setMisteryCount] = useState(0);
   const [showPromo, setShowPromo] = useState(true);
-
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -43,29 +42,42 @@ function App() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      setImage(reader.result as string);
-
-      // Elegimos mensaje y puntaje final
+      // Generar puntaje y mensaje aleatorio
       const r = mensajes[Math.floor(Math.random() * mensajes.length)];
       const targetScore = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
 
       let progressValue = 0;
 
-      const step = () => {
-        progressValue += Math.random() * 6; // velocidad de la barra
-        if (progressValue > 100) progressValue = 100;
-        setProgress(progressValue);
-
-        if (progressValue < 100) {
-          setTimeout(step, 50); // intervalo constante, más confiable en móviles
-        } else {
-          setShowPromo(false);
-          setResult({ txt: r.txt, score: targetScore });
-          setLoading(false);
-        }
+      // Función para animar fases de progreso
+      const animatePhase = (from: number, to: number, duration: number, callback?: () => void) => {
+        const stepTime = 50; // cada 50ms
+        const steps = Math.ceil(duration / stepTime);
+        const increment = (to - from) / steps;
+        let current = from;
+        const interval = setInterval(() => {
+          current += increment;
+          if (current >= to) {
+            current = to;
+            clearInterval(interval);
+            if (callback) callback();
+          }
+          setProgress(current);
+        }, stepTime);
       };
 
-      step();
+      // Animación escalonada: 0→30 → 60 → 99 → 100
+      animatePhase(0, 30, 600, () => {
+        animatePhase(30, 60, 1000, () => {
+          animatePhase(60, 99, 1200, () => {
+            animatePhase(99, 100, 300, () => {
+              setShowPromo(false);
+              setImage(reader.result as string); // mostrar imagen solo al final
+              setResult({ txt: r.txt, score: targetScore });
+              setLoading(false);
+            });
+          });
+        });
+      });
     };
 
     reader.readAsDataURL(file);
@@ -114,11 +126,9 @@ function App() {
           <div className="bar">
             <div className="fill" style={{ width: `${progress}%` }} />
           </div>
-          {/* Mostrar porcentaje proporcional a barra */}
+          {/* Porcentaje proporcional al puntaje final */}
           <p>
-            {result
-              ? Math.floor((progress / 100) * result.score)
-              : Math.floor(progress)}%
+            {result ? Math.floor((progress / 100) * result.score) : Math.floor(progress)}%
           </p>
         </div>
       )}
