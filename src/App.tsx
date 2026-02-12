@@ -24,6 +24,19 @@ function App() {
     setMisteryCount(n);
   }, []);
 
+ useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://pl28698465.effectivegatecpm.com/e3cd318543c99f5655fb82c6325acab5/invoke.js";
+    script.async = true;
+    script.dataset.cfasync = "false";
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script); // opcional, limpia al desmontar
+    };
+  }, []);
+
+  
   const handlePhoto = (file: File) => {
     setLoading(true);
     setProgress(0);
@@ -83,7 +96,7 @@ function App() {
         <div className="promo-box">
          
         
-          <div style={{ fontSize: 12, opacity: 0.8 }}>Toca para ver</div>
+          <div id="container-e3cd318543c99f5655fb82c6325acab5" style={{ fontSize: 12, opacity: 0.8 }}>Toca para ver</div>
         </div>
       )}
 
