@@ -16,7 +16,6 @@ function App() {
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [percent, setPercent] = useState(0);
   const [result, setResult] = useState<{ txt: string; score: number } | null>(null);
 
   useEffect(() => {
@@ -24,7 +23,7 @@ function App() {
     setMisteryCount(n);
   }, []);
 
- useEffect(() => {
+  useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://pl28698465.effectivegatecpm.com/e3cd318543c99f5655fb82c6325acab5/invoke.js";
     script.async = true;
@@ -32,124 +31,61 @@ function App() {
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script); // opcional, limpia al desmontar
+      document.body.removeChild(script);
     };
   }, []);
 
-  
-const handlePhoto = (file: File) => {
-  setLoading(true);
-  setProgress(0);
-  setPercent(0);
-  setResult(null);
-  setShowPromo(true);
+  const handlePhoto = (file: File) => {
+    setLoading(true);
+    setProgress(0);
+    setResult(null);
+    setShowPromo(true);
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    setImage(reader.result as string);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result as string);
 
-    // Elegir mensaje y puntaje final al inicio
-    const r = mensajes[Math.floor(Math.random() * mensajes.length)];
-    const targetScore = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
+      // Elegimos mensaje y puntaje final
+      const r = mensajes[Math.floor(Math.random() * mensajes.length)];
+      const targetScore = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
 
-    let p = 0;
+      let progressValue = 0;
 
-    const interval = setInterval(() => {
-      p += Math.random() * 6; // incrementa barra
-      if (p > 100) p = 100;
+      const step = () => {
+        progressValue += Math.random() * 6; // velocidad de la barra
+        if (progressValue > 100) progressValue = 100;
+        setProgress(progressValue);
 
-      setProgress(p);
+        if (progressValue < 100) {
+          setTimeout(step, 50); // intervalo constante, más confiable en móviles
+        } else {
+          setShowPromo(false);
+          setResult({ txt: r.txt, score: targetScore });
+          setLoading(false);
+        }
+      };
 
-      // Número proporcional al progreso de la barra
-      const currentPercent = Math.floor((p / 100) * targetScore);
-      setPercent(currentPercent);
+      step();
+    };
 
-      if (p === 100) {
-        clearInterval(interval);
-        setShowPromo(false);
-
-        // Mostrar resultado final
-        setResult({ txt: r.txt, score: targetScore });
-        setPercent(targetScore); // asegurar valor exacto
-        setLoading(false);
-      }
-    }, 100);
+    reader.readAsDataURL(file);
   };
 
-  reader.readAsDataURL(file);
-};
-
-
-  const fakeLoading = () => {
-  const r = mensajes[Math.floor(Math.random() * mensajes.length)];
-  const targetScore = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
-
-  let p = 0;
-  let currentPercent = 0;
-
-  const interval = setInterval(() => {
-    // Incremento de la barra
-    p += Math.random() * 6;
-    if (p >= 100) p = 100;
-
-    // Incremento proporcional del porcentaje hacia el puntaje final
-    currentPercent = Math.floor((p / 100) * targetScore);
-
-    setProgress(p);
-    setPercent(currentPercent);
-
-    if (p === 100) {
-      clearInterval(interval);
-      setShowPromo(false);
-
-      // Mostrar resultado final
-      setResult({ txt: r.txt, score: targetScore });
-      setPercent(targetScore); // asegura que llegue al puntaje exacto
-      setLoading(false);
-    }
-  }, 100);
-};
-
-
-  const showResult = () => {
-    const r = mensajes[Math.floor(Math.random() * mensajes.length)];
-    const score = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
-    setLoading(false);
-    setResult({ txt: r.txt, score });
-    animatePercent(score);
-  };
-
-  const animatePercent = (target: number) => {
-    let val = 0;
-    const int = setInterval(() => {
-      val += 1;
-      setPercent(val);
-      if (val >= target) clearInterval(int);
-    }, 20);
-  };
-
- const abrirPublicidad = () => {
-    // Creamos el script dinámicamente
+  const abrirPublicidad = () => {
     const script = document.createElement("script");
     script.src = "https://pl28698498.effectivegatecpm.com/af/47/e5/af47e5f5902cc0de8bbfb7592188853b.js";
     script.async = true;
-
-    // Lo agregamos al body para que se ejecute
     document.body.appendChild(script);
 
-    // Opcional: limpiar script después de abrirlo
     setTimeout(() => {
       document.body.removeChild(script);
-    }, 3000); // 3 segundos después
+    }, 3000);
   };
-
 
   return (
     <div className="app">
       <h1>¿Qué tan atractivo eres?</h1>
       <p className="sub">Descúbrelo en segundos. Privacidad Garantizada.</p>
-
-
 
       {!image && !loading && !result && (
         <label className="btn">
@@ -165,9 +101,10 @@ const handlePhoto = (file: File) => {
 
       {showPromo && (
         <div className="promo-box">
-         
-        
-          <div id="container-e3cd318543c99f5655fb82c6325acab5" style={{ fontSize: 12, opacity: 0.8 }}></div>
+          <div
+            id="container-e3cd318543c99f5655fb82c6325acab5"
+            style={{ fontSize: 12, opacity: 0.8 }}
+          ></div>
         </div>
       )}
 
@@ -177,33 +114,39 @@ const handlePhoto = (file: File) => {
           <div className="bar">
             <div className="fill" style={{ width: `${progress}%` }} />
           </div>
-          <p>{Math.floor(progress)}%</p>
+          {/* Mostrar porcentaje proporcional a barra */}
+          <p>
+            {result
+              ? Math.floor((progress / 100) * result.score)
+              : Math.floor(progress)}%
+          </p>
         </div>
       )}
 
-     {result && (
-  <div className="result fit-screen">
+      {result && (
+        <div className="result fit-screen">
           {image && (
             <div className="img-wrap">
               <img src={image} alt="preview" />
             </div>
           )}
-          <h2>{percent}%</h2>
+          <h2>{Math.floor((progress / 100) * result.score)}%</h2>
           <p>{result.txt}</p>
 
           <button className="retry-btn" onClick={() => location.reload()}>
-              🔄 Probar otra foto
-        </button>
+            🔄 Probar otra foto
+          </button>
 
           <div className="cta">
-         
             <p>
               👀 {misteryCount} personas de tu entorno sienten algo por ti
               <br />
               <small>Trabajo, estudios o redes</small>
             </p>
-              
-            <button className="btn small" onClick={abrirPublicidad}>VER QUIÉNES</button>
+
+            <button className="btn small" onClick={abrirPublicidad}>
+              VER QUIÉNES
+            </button>
           </div>
         </div>
       )}
