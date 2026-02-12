@@ -16,6 +16,14 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<{ txt: string; score: number } | null>(null);
+  const [isMobile, setIsMobile] = useState(false); // Detectar móvil
+  const [showMobilePercent, setShowMobilePercent] = useState(false); // Para mostrar % final en móviles
+
+  // Detectar si es móvil
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    setIsMobile(/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(ua));
+  }, []);
 
   useEffect(() => {
     const n = Math.floor(Math.random() * 5) + 2; // 2 a 6
@@ -39,18 +47,17 @@ function App() {
     setProgress(0);
     setResult(null);
     setShowPromo(true);
+    setShowMobilePercent(false); // reset para móviles
 
     const reader = new FileReader();
     reader.onload = () => {
-      // Generar puntaje y mensaje aleatorio
+      // Elegir mensaje y puntaje final
       const r = mensajes[Math.floor(Math.random() * mensajes.length)];
       const targetScore = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
 
-      let progressValue = 0;
-
       // Función para animar fases de progreso
       const animatePhase = (from: number, to: number, duration: number, callback?: () => void) => {
-        const stepTime = 50; // cada 50ms
+        const stepTime = 50;
         const steps = Math.ceil(duration / stepTime);
         const increment = (to - from) / steps;
         let current = from;
@@ -74,6 +81,7 @@ function App() {
               setImage(reader.result as string); // mostrar imagen solo al final
               setResult({ txt: r.txt, score: targetScore });
               setLoading(false);
+              if (isMobile) setShowMobilePercent(true); // mostrar % final flotante en móviles
             });
           });
         });
@@ -123,13 +131,28 @@ function App() {
       {loading && (
         <div className="loading">
           <p>🧠 Escaneando rasgos...</p>
-          <div className="bar">
+          <div className="bar" style={{ position: "relative" }}>
             <div className="fill" style={{ width: `${progress}%` }} />
+            {/* Número final flotante solo en móviles */}
+            {isMobile && showMobilePercent && result && (
+              <span
+                style={{
+                  position: "absolute",
+                  right: 5,
+                  top: -20,
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  color: "#000"
+                }}
+              >
+                {result.score}%
+              </span>
+            )}
           </div>
-          {/* Porcentaje proporcional al puntaje final */}
-          <p>
-            {result ? Math.floor((progress / 100) * result.score) : Math.floor(progress)}%
-          </p>
+          {/* Porcentaje visible en PC */}
+          {!isMobile && (
+            <p>{result ? Math.floor((progress / 100) * result.score) : Math.floor(progress)}%</p>
+          )}
         </div>
       )}
 
@@ -140,7 +163,7 @@ function App() {
               <img src={image} alt="preview" />
             </div>
           )}
-          <h2>{Math.floor((progress / 100) * result.score)}%</h2>
+          <h2>{result.score}%</h2>
           <p>{result.txt}</p>
 
           <button className="retry-btn" onClick={() => location.reload()}>
