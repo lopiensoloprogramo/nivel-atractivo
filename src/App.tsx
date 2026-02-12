@@ -92,13 +92,7 @@ function App() {
       <h1>¿Qué tan atractivo eres?</h1>
       <p className="sub">Descúbrelo en segundos. Privacidad Garantizada.</p>
 
-      {showPromo && (
-        <div className="promo-box">
-         
-        
-          <div id="container-e3cd318543c99f5655fb82c6325acab5" style={{ fontSize: 12, opacity: 0.8 }}></div>
-        </div>
-      )}
+
 
       {!image && !loading && !result && (
         <label className="btn">
@@ -110,6 +104,14 @@ function App() {
             onChange={(e) => e.target.files && handlePhoto(e.target.files[0])}
           />
         </label>
+      )}
+      
+      {showPromo && (
+        <div className="promo-box">
+         
+        
+          <div id="container-e3cd318543c99f5655fb82c6325acab5" style={{ fontSize: 12, opacity: 0.8 }}></div>
+        </div>
       )}
 
       {loading && (
