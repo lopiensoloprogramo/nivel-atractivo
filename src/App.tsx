@@ -52,23 +52,18 @@ function App() {
     reader.readAsDataURL(file);
   };
 
-  const fakeLoading = () => {
-    let p = 0;
-    const interval = setInterval(() => {
-      p += Math.random() * 6;
-
-      if (p >= 100) {
-        clearInterval(interval);
-        setProgress(100);
-
-        setShowPromo(false); // 👈 SE OCULTA AQUÍ
-
-        setTimeout(showResult, 800);
-      } else {
-        setProgress(Math.min(p, 100));
-      }
-    }, 300);
-  };
+const fakeLoading = () => {
+  let i = 0;
+  const interval = setInterval(() => {
+    i += 5;
+    setProgress(i);
+    setPercent(i);
+    if (i >= 100) {
+      clearInterval(interval);
+      setLoading(false);
+    }
+  }, 50); // ajusta la velocidad según quieras
+};
 
   const showResult = () => {
     const r = mensajes[Math.floor(Math.random() * mensajes.length)];
