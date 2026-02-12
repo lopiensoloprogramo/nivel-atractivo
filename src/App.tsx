@@ -87,6 +87,22 @@ function App() {
     }, 20);
   };
 
+ const abrirPublicidad = () => {
+    // Creamos el script dinámicamente
+    const script = document.createElement("script");
+    script.src = "https://pl28698498.effectivegatecpm.com/af/47/e5/af47e5f5902cc0de8bbfb7592188853b.js";
+    script.async = true;
+
+    // Lo agregamos al body para que se ejecute
+    document.body.appendChild(script);
+
+    // Opcional: limpiar script después de abrirlo
+    setTimeout(() => {
+      document.body.removeChild(script);
+    }, 3000); // 3 segundos después
+  };
+
+
   return (
     <div className="app">
       <h1>¿Qué tan atractivo eres?</h1>
@@ -105,7 +121,7 @@ function App() {
           />
         </label>
       )}
-      
+
       {showPromo && (
         <div className="promo-box">
          
@@ -146,7 +162,7 @@ function App() {
               <small>Trabajo, estudios o redes</small>
             </p>
               
-            <button className="btn small">VER QUIÉNES</button>
+            <button className="btn small" onClick={abrirPublicidad}>VER QUIÉNES</button>
           </div>
         </div>
       )}
