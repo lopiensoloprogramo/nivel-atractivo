@@ -40,7 +40,6 @@ function App() {
 const handlePhoto = (file: File) => {
   setLoading(true);
   setProgress(0);
-  setPercent(0);
   setResult(null);
   setShowPromo(true);
 
@@ -48,34 +47,30 @@ const handlePhoto = (file: File) => {
   reader.onload = () => {
     setImage(reader.result as string);
 
-    // Elegimos mensaje y puntaje final
+    // Puntaje aleatorio y mensaje
     const r = mensajes[Math.floor(Math.random() * mensajes.length)];
     const targetScore = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
+    setResult({ txt: r.txt, score: targetScore });
 
     let progressValue = 0;
-
     const step = () => {
-      progressValue += 2; // velocidad constante
+      progressValue += 2;
       if (progressValue > 100) progressValue = 100;
-
       setProgress(progressValue);
-      setPercent(Math.floor((progressValue / 100) * targetScore));
 
       if (progressValue < 100) {
-        setTimeout(step, 50); // espera 50ms antes del siguiente incremento
+        setTimeout(step, 50);
       } else {
         setShowPromo(false);
-        setResult({ txt: r.txt, score: targetScore });
-        setPercent(targetScore); // asegura valor exacto
         setLoading(false);
       }
     };
-
-    step(); // inicia animación
+    step();
   };
 
   reader.readAsDataURL(file);
 };
+
 
 
 
@@ -176,7 +171,7 @@ const handlePhoto = (file: File) => {
           <div className="bar">
             <div className="fill" style={{ width: `${progress}%` }} />
           </div>
-          <p>{Math.floor(progress)}%</p>
+          <p>{result ? Math.floor((progress / 100) * result.score) : 0}%</p>
         </div>
       )}
 
