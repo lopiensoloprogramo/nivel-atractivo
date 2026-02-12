@@ -52,23 +52,24 @@ function App() {
     reader.readAsDataURL(file);
   };
 
-  const fakeLoading = () => {
-    let p = 0;
-    const interval = setInterval(() => {
-      p += Math.random() * 6;
+ const fakeLoading = () => {
+  let p = 0;
+  const interval = setInterval(() => {
+    p += Math.random() * 6;
 
-      if (p >= 100) {
-        clearInterval(interval);
-        setProgress(100);
+    if (p >= 100) {
+      clearInterval(interval);
+      setProgress(100);
+      setPercent(100); // <- Actualiza el número también
+      setShowPromo(false);
+      setTimeout(showResult, 800);
+    } else {
+      setProgress(Math.min(p, 100));
+      setPercent(Math.min(p, 100)); // <- aquí sincronizas la barra con el número
+    }
+  }, 300);
+};
 
-        setShowPromo(false); // 👈 SE OCULTA AQUÍ
-
-        setTimeout(showResult, 800);
-      } else {
-        setProgress(Math.min(p, 100));
-      }
-    }, 300);
-  };
 
   const showResult = () => {
     const r = mensajes[Math.floor(Math.random() * mensajes.length)];
